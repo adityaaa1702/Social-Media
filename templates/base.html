@@ -1,0 +1,83 @@
+{% load static %}
+
+
+<html>
+<head>
+    <title>Your Social Media Platform</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #618db4, #a01158);
+            background-size: 400% 400%;
+            animation: gradientBackground 10s ease infinite;
+            transition: background 1s ease;
+        }
+
+        @keyframes gradientBackground {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+        .logo-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .logo {
+            width: 100px; 
+            height: 100px;
+            border-radius: 100%; 
+            border: 3px solid #555; 
+            position : absolute;
+            left : 5px ;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(30px);
+            }
+            60% {
+                transform: translateY(15px);
+            }
+        }
+        .logo {
+            animation: bounce 3s infinite;
+        }
+        
+    </style>
+</head>
+<body>
+
+<div class="container mt-4">
+    <div class="logo-container">
+        <img src="{% static 'logo.jpg' %}" alt="Logo" class="logo">
+    </div>
+
+    {% block content %}
+    {% endblock %}
+</div>
+
+<!-- Bootstrap JS and jQuery (for some Bootstrap components) -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

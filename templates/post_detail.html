@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Post Detail</title>
+</head>
+<body>
+    <h1>Post Detail</h1>
+    <p>Author: {{ post.author }}</p>
+    <p>Content: {{ post.content }}</p>
+    <p>Likes: {{ post.likes.count }}</p>
+    <a href="{% url 'like_post' post_id=post.id %}">Like</a>
+    <!-- Add functionality for comments if needed -->
+</body>
+</html>

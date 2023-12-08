@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container mt-4">
+        <h1>Social Media Platform</h1>
+        <!-- Add links to other pages -->
+        <div class="mt-4">
+            <a class="btn btn-info" href="{% url 'login' %}">Login</a>
+            <a class="btn btn-success" href="{% url 'register' %}">Register</a>
+        </div>
+    </div>
+{% endblock %}

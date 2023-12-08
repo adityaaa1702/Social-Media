@@ -1,0 +1,64 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+  <h3>Received Friend Requests</h3>
+  {% for request in friend_requests_received %}
+    Friend request from {{ request.from_user.username }}
+    <a href="#" class="accept-friend-request" data-request-id="{{ request.id }}">Accept</a> |
+    <a href="#" class="reject-friend-request" data-request-id="{{ request.id }}">Reject</a>
+    <br>
+  {% empty %}
+    <p>No friend requests received.</p>
+  {% endfor %}
+
+  <h3>Search for Friends</h3>
+  <form id="searchForm" method="get" action="{% url 'search_friends' %}">
+    {% csrf_token %}
+    <label for="search">Username:</label>
+    <input type="text" id="search" name="search">
+    <button type="submit">Search</button>
+  </form>
+
+  {% if search_results %}
+    <h3>Search Results</h3>
+    {% for user in search_results %}
+      {{ user.username }}
+      <button class="send-friend-request-btn" data-to-user-id="{{ user.id }}">Send Friend Request</button>
+      <br>
+    {% empty %}
+      <p>No users found.</p>
+    {% endfor %}
+  {% endif %}
+
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const sendFriendRequestButtons = document.querySelectorAll('.send-friend-request-btn');
+
+      sendFriendRequestButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+          const toUserId = button.getAttribute('data-to-user-id');
+          sendFriendRequest(toUserId);
+        });
+      });
+
+      function sendFriendRequest(toUserId) {
+        fetch(`/send-friend-request/${toUserId}/`)
+          .then(function(response) {
+            return response.json();
+          })
+          .then(function(data) {
+            if (data.success) {
+              alert('Friend request sent successfully!');
+            } else {
+              alert('Failed to send friend request. Error: ' + data.error);
+            }
+          })
+          .catch(function(error) {
+            alert('An error occurred while sending friend request. Error: ' + error);
+          });
+      }
+    });
+</script>
+{% endblock %}
