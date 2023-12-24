@@ -13,7 +13,7 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import Profile,FriendRequest
 from django.views.generic import ListView, RedirectView
 from django.urls import reverse_lazy
-from .models import FriendRequest
+from .models import FriendRequest,Friendship
 
 
 
@@ -130,7 +130,6 @@ def profile(request):
 from django.http import JsonResponse
 
 from .models import FriendRequest
-
 @login_required
 def friend_requests(request):
     friend_requests_received = FriendRequest.objects.filter(to_user=request.user)
@@ -145,34 +144,46 @@ def friend_requests(request):
 @login_required
 def send_friend_request(request, to_user_id):
     try:
-        # Get the user to whom the friend request is being sent
         to_user = get_object_or_404(User, id=to_user_id)
-
-        # Check if a friend request already exists
         existing_request = FriendRequest.objects.filter(from_user=request.user, to_user=to_user)
+        
         if existing_request.exists():
             raise Exception('Friend request already sent.')
 
-        # Create a new friend request
-        friend_request = FriendRequest(from_user=request.user, to_user=to_user)
-        friend_request.save()
+        FriendRequest.objects.create(from_user=request.user, to_user=to_user)
+        return redirect('friend_requests')
 
-        # Return a JSON response on success
-        return JsonResponse({'success': True})
     except Exception as e:
-        # Return a JSON response on failure
-        return JsonResponse({'success': False, 'error': str(e)})
+        return render(request, 'friend_requests.html')
+
 
 @login_required
 def accept_friend_request(request, friend_request_id):
-    friend_request = FriendRequest.objects.get(id=friend_request_id)
-    friend_request.delete()  # You may want to keep a record in the database, instead of deleting
-    return redirect('view_profile')  # Redirect to the user's profile or any other page
+    try:
+        friend_request = get_object_or_404(FriendRequest, id=friend_request_id)
+
+        if friend_request.to_user != request.user:
+            raise Exception('You are not authorized to accept this friend request.')
+
+        if friend_request.is_accepted:
+            raise Exception('Friend request has already been accepted.')
+
+        # Mark the friend request as accepted
+        friend_request.is_accepted = True
+        friend_request.save()
+
+        # You can perform additional actions if needed, e.g., create a Friendship object
+        Friendship.objects.create(user1=request.user, user2=friend_request.from_user)
+
+        return redirect('friend_requests')
+    except Exception as e:
+        return render(request, 'error.html', {'error_message': str(e)})
+
+
 
 @login_required
 def reject_friend_request(request, friend_request_id):
     try:
-        # Get the friend request
         friend_request = get_object_or_404(FriendRequest, id=friend_request_id)
 
         # Check if the logged-in user is the recipient of the friend request
@@ -182,12 +193,13 @@ def reject_friend_request(request, friend_request_id):
         # Delete the friend request
         friend_request.delete()
 
-        # Return a JSON response on success
-        return JsonResponse({'success': True})
-    except Exception as e:
-        # Return a JSON response on failure
-        return JsonResponse({'success': False, 'error': str(e)})
+        # Redirect to a success page
+        return redirect('friend_requests')
 
+    except Exception as e:
+        return render(request, 'friend_requests.html')
+    
+    
 from django.db.models import Q
 
 @login_required

@@ -55,8 +55,36 @@
                         <hr>
             
                         <h5 class="card-title">Your Friends</h5>
-                        <!-- Add content for displaying friends -->
-                        <!-- Add more content as needed -->
+{% if profile.friends.all %}
+    <div id="friends-carousel" class="carousel slide" data-ride="carousel">
+        <div class="carousel-inner">
+            {% for friend in profile.friends.all %}
+                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                    <div class="friend-profile">
+                        {% if friend.profile.profile_picture %}
+                            <img src="{{ friend.profile.profile_picture.url }}" alt="{{ friend.username }} Profile Picture">
+                        {% else %}
+                            <!-- Default image or placeholder -->
+                            <img src="{% static 'default_profile_picture.jpg' %}" alt="{{ friend.username }} Profile Picture">
+                        {% endif %}
+                        <p>{{ friend.username }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <a class="carousel-control-prev" href="#friends-carousel" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#friends-carousel" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+        </a>
+    </div>
+{% else %}
+    <p>No friends yet.</p>
+{% endif %}
+
                     </div>
                 </div>
             </div>

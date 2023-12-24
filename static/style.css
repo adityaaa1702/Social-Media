@@ -34,6 +34,16 @@ body:hover {
   background: linear-gradient(135deg, #e4117a63, rgb(53, 95, 184));
 }
 
+.friend-profile {
+  text-align: center;
+}
+
+.friend-profile img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 50%;
+  margin-bottom: 10px;
+}
 
 
 .profile-container {

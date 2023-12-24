@@ -1,16 +1,25 @@
-
 {% extends 'base.html' %}
 
 {% block content %}
+<a href="{% url 'view_profile' %}">Back to Profile</a>
+
   <h3>Received Friend Requests</h3>
-  {% for request in friend_requests_received %}
-    Friend request from {{ request.from_user.username }}
-    <a href="#" class="accept-friend-request" data-request-id="{{ request.id }}">Accept</a> |
-    <a href="#" class="reject-friend-request" data-request-id="{{ request.id }}">Reject</a>
+  <ul>
+    {% for friend_request in friend_requests_received %}
+    <p>Friend request from {{ friend_request.from_user.username }}</p>
+    <form method="post" action="{% url 'accept_friend_request' friend_request.id %}">
+      {% csrf_token %}
+      <button type="submit">Accept</button>
+    </form>
+    <form method="post" action="{% url 'reject_friend_request' friend_request.id %}">
+      {% csrf_token %}
+      <button type="submit">Reject</button>
+    </form>
     <br>
-  {% empty %}
-    <p>No friend requests received.</p>
-  {% endfor %}
+    {% empty %}
+      <p>No friend requests received.</p>
+    {% endfor %}
+  </ul>
 
   <h3>Search for Friends</h3>
   <form id="searchForm" method="get" action="{% url 'search_friends' %}">
@@ -23,42 +32,16 @@
   {% if search_results %}
     <h3>Search Results</h3>
     {% for user in search_results %}
-      {{ user.username }}
-      <button class="send-friend-request-btn" data-to-user-id="{{ user.id }}">Send Friend Request</button>
-      <br>
+    <form method="post" action="{% url 'send_friend_request' user.id %}">
+      {% csrf_token %}
+      <button type="submit" class="send-friend-request">Send Friend Request</button>
+    </form>
     {% empty %}
       <p>No users found.</p>
     {% endfor %}
   {% endif %}
 
-
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const sendFriendRequestButtons = document.querySelectorAll('.send-friend-request-btn');
-
-      sendFriendRequestButtons.forEach(function(button) {
-        button.addEventListener('click', function() {
-          const toUserId = button.getAttribute('data-to-user-id');
-          sendFriendRequest(toUserId);
-        });
-      });
-
-      function sendFriendRequest(toUserId) {
-        fetch(`/send-friend-request/${toUserId}/`)
-          .then(function(response) {
-            return response.json();
-          })
-          .then(function(data) {
-            if (data.success) {
-              alert('Friend request sent successfully!');
-            } else {
-              alert('Failed to send friend request. Error: ' + data.error);
-            }
-          })
-          .catch(function(error) {
-            alert('An error occurred while sending friend request. Error: ' + error);
-          });
-      }
-    });
-</script>
+    
+  </script>
 {% endblock %}
